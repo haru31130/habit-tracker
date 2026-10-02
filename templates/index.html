@@ -6,9 +6,22 @@
 </head>
 <body>
     <h1>私の習慣</h1>
+
+    <form action="{{ url_for('add') }}" method="post">
+        <input type="text" name="name" placeholder="新しい習慣" required>
+        <button type="submit">追加</button>
+    </form>
+
     <ul>
         {% for habit in habits %}
-            <li>{{ habit.name }}</li>
+            <li>
+                {{ habit.name }}
+                <form action="{{ url_for('delete', habit_id=habit.id) }}" method="post" style="display: inline;">
+                    <button type="submit">削除</button>
+                </form>
+            </li>
+        {% else %}
+            <li>まだ習慣がありません。上のフォームから追加しましょう。</li>
         {% endfor %}
     </ul>
 </body>
