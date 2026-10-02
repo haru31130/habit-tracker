@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ハビットトラッカー</title>
+</head>
+<body>
+    <h1>私の習慣</h1>
+    <ul>
+        {% for habit in habits %}
+            <li>{{ habit }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
