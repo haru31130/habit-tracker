@@ -2,27 +2,235 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ハビットトラッカー</title>
+    <style>
+        :root {
+            --bg-color: #f7f9fa;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #7f8c8d;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --success-hover: #059669;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            margin: 0 0 8px 0;
+            color: #1e293b;
+        }
+
+        .date-badge {
+            display: inline-block;
+            font-size: 0.9rem;
+            color: var(--primary);
+            background: #eef2ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .add-form {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .add-form input[type="text"] {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .add-form input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.15s, transform 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .habit-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .habit-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            transition: all 0.2s;
+        }
+
+        .habit-item:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .habit-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: 2px solid #cbd5e1;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            padding: 0;
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--success);
+            background: #ecfdf5;
+        }
+
+        .toggle-btn.completed {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .habit-name {
+            font-size: 1rem;
+            color: #1e293b;
+            transition: color 0.2s, text-decoration 0.2s;
+        }
+
+        .habit-name.completed {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: color 0.15s, background-color 0.15s;
+        }
+
+        .btn-delete:hover {
+            color: var(--danger);
+            background: #fef2f2;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 32px 0;
+            font-size: 0.95rem;
+        }
+    </style>
 </head>
 <body>
-    <h1>私の習慣</h1>
+    <div class="container">
+        <div class="header">
+            <h1>ハビットトラッカー</h1>
+            <span class="date-badge">📅 今日: {{ today }}</span>
+        </div>
 
-    <form action="{{ url_for('add') }}" method="post">
-        <input type="text" name="name" placeholder="新しい習慣" required>
-        <button type="submit">追加</button>
-    </form>
+        <form class="add-form" action="{{ url_for('add') }}" method="post">
+            <input type="text" name="name" placeholder="新しい習慣を入力..." required>
+            <button type="submit" class="btn btn-primary">追加</button>
+        </form>
 
-    <ul>
-        {% for habit in habits %}
-            <li>
-                {{ habit.name }}
-                <form action="{{ url_for('delete', habit_id=habit.id) }}" method="post" style="display: inline;">
-                    <button type="submit">削除</button>
-                </form>
-            </li>
-        {% else %}
-            <li>まだ習慣がありません。上のフォームから追加しましょう。</li>
-        {% endfor %}
-    </ul>
+        <ul class="habit-list">
+            {% for habit in habits %}
+                <li class="habit-item">
+                    <div class="habit-left">
+                        <!-- 今日完了したかどうかの切り替えボタン -->
+                        <form action="{{ url_for('toggle', habit_id=habit.id) }}" method="post" style="margin: 0;">
+                            <button type="submit" 
+                                    class="toggle-btn {% if habit.is_completed %}completed{% endif %}"
+                                    title="{% if habit.is_completed %}未完了に戻す{% else %}完了にする{% endif %}">
+                                {% if habit.is_completed %}✓{% endif %}
+                            </button>
+                        </form>
+                        <span class="habit-name {% if habit.is_completed %}completed{% endif %}">
+                            {{ habit.name }}
+                        </span>
+                    </div>
+
+                    <form action="{{ url_for('delete', habit_id=habit.id) }}" method="post" style="margin: 0;">
+                        <button type="submit" class="btn-delete" title="削除">削除</button>
+                    </form>
+                </li>
+            {% else %}
+                <li class="empty-message">まだ習慣が登録されていません。<br>上のフォームから習慣を追加してみましょう！</li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
 </html>
